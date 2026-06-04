@@ -1,0 +1,51 @@
+{
+    "name": "latitudeinnovation/laravel-raraxuan",
+    "description": "Laravel SDK for Raraxuan AI API",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "raraxuan",
+        "ai",
+        "sdk"
+    ],
+    "homepage": "https://ai.raraxuan.com",
+    "authors": [
+        {
+            "name": "Latitude Innovation"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "LatitudeInnovation\\Raraxuan\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LatitudeInnovation\\Raraxuan\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LatitudeInnovation\\Raraxuan\\RaraxuanServiceProvider"
+            ],
+            "aliases": {
+                "Raraxuan": "LatitudeInnovation\\Raraxuan\\Facades\\Raraxuan"
+            }
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/http": "^10.0|^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "phpunit/phpunit": "^10.0|^11.0|^12.0"
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-text"
+    }
+}

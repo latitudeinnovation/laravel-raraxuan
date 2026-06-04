@@ -1,0 +1,35 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Composer
+composer.lock
+
+# Environment and local overrides
+.env
+.env.*
+!.env.example
+
+# Tests and coverage
+/.phpunit.cache/
+/.phpunit.result.cache
+/coverage/
+/build/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+/.cache/
+/tmp/
+
+# IDE and editor files
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
