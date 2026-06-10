@@ -20,17 +20,30 @@ class RaraxuanClient
     public function run(array $payload): array
     {
         return $this->http()
-            ->post($this->endpoint('/v1/run'), $payload)
+            ->post($this->endpoint($this->processPath()), $payload)
+            ->throw()
+            ->json();
+    }
+
+    public function processPrompt(string $template, array $variables = []): array
+    {
+        return $this->run([
+            'template' => $template,
+            'variables' => $variables,
+        ]);
+    }
+
+    public function ping(): array
+    {
+        return $this->http()
+            ->get($this->endpoint($this->pingPath()))
             ->throw()
             ->json();
     }
 
     public function agent(string $agent, array $input = []): array
     {
-        return $this->run([
-            'agent' => $agent,
-            'input' => $input,
-        ]);
+        return $this->processPrompt($agent, $input);
     }
 
     protected function endpoint(string $path): string
@@ -47,6 +60,28 @@ class RaraxuanClient
         }
 
         return rtrim($baseUrl, '/');
+    }
+
+    protected function processPath(): string
+    {
+        $processPath = config('raraxuan.process_path', '/v1/prompts/process');
+
+        if (! is_string($processPath) || trim($processPath) === '') {
+            throw InvalidConfigurationException::missingProcessPath();
+        }
+
+        return trim($processPath);
+    }
+
+    protected function pingPath(): string
+    {
+        $pingPath = config('raraxuan.ping_path', '/v1/ping');
+
+        if (! is_string($pingPath) || trim($pingPath) === '') {
+            throw InvalidConfigurationException::missingPingPath();
+        }
+
+        return trim($pingPath);
     }
 
     protected function apiKey(): string

@@ -24,7 +24,7 @@ php artisan vendor:publish --tag=raraxuan-config
 Add these values to your Laravel project's `.env` file:
 
 ```dotenv
-RARAXUAN_API_URL=https://ai.raraxuan.com/api
+RARAXUAN_API_URL=https://ai.raraxuan.com
 RARAXUAN_API_KEY=rx_live_xxxxxxxxx
 RARAXUAN_TIMEOUT=60
 ```
@@ -33,7 +33,9 @@ The published config file is `config/raraxuan.php`:
 
 ```php
 return [
-    'base_url' => env('RARAXUAN_API_URL', 'https://ai.raraxuan.com/api'),
+    'base_url' => env('RARAXUAN_API_URL', 'https://ai.raraxuan.com'),
+    'process_path' => env('RARAXUAN_PROCESS_PATH', '/v1/prompts/process'),
+    'ping_path' => env('RARAXUAN_PING_PATH', '/v1/ping'),
     'api_key' => env('RARAXUAN_API_KEY'),
     'timeout' => env('RARAXUAN_TIMEOUT', 60),
 ];
@@ -41,27 +43,61 @@ return [
 
 ## Usage
 
-Call an agent through the facade:
+Process a prompt through the facade:
 
 ```php
 use LatitudeInnovation\Raraxuan\Facades\Raraxuan;
 
-$response = Raraxuan::agent('seo-writer', [
-    'topic' => 'Laravel hosting',
+$response = Raraxuan::processPrompt('customer-support-reply', [
+    'customer_message' => 'Hello',
+    'tone' => 'friendly',
+    'product' => 'Acme',
 ]);
 ```
 
-Or call the generic run endpoint:
+Check API health:
 
 ```php
 use LatitudeInnovation\Raraxuan\Facades\Raraxuan;
 
-$response = Raraxuan::run([
-    'agent' => 'seo-writer',
-    'input' => [
-        'topic' => 'Laravel hosting',
+$response = Raraxuan::ping();
+```
+
+## Artisan Commands
+
+After installing and configuring the SDK, you can test the API from Artisan.
+
+Run an agent/template with a JSON variables object:
+
+```bash
+php artisan raraxuan:run customer-support-reply --input='{"customer_message":"Hello","tone":"friendly","product":"Acme"}'
+```
+
+Check API health:
+
+```bash
+php artisan raraxuan:ping
+```
+
+If the API returns an HTTP error, the commands print the status code and response body instead of a stack trace.
+
+The API returns wrapped JSON payloads, which the SDK returns unchanged:
+
+```php
+[
+    'success' => true,
+    'data' => [
+        // ...
     ],
-]);
+]
+
+[
+    'success' => false,
+    'error' => [
+        'code' => '...',
+        'message' => '...',
+    ],
+]
 ```
 
 ## Error Handling
@@ -79,8 +115,10 @@ use LatitudeInnovation\Raraxuan\Exceptions\RaraxuanException;
 use LatitudeInnovation\Raraxuan\Facades\Raraxuan;
 
 try {
-    $response = Raraxuan::agent('seo-writer', [
-        'topic' => 'Laravel hosting',
+    $response = Raraxuan::processPrompt('customer-support-reply', [
+        'customer_message' => 'Hello',
+        'tone' => 'friendly',
+        'product' => 'Acme',
     ]);
 } catch (RequestException $exception) {
     report($exception);
