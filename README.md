@@ -148,14 +148,14 @@ composer test
 
 ## Local Development
 
-Before publishing to Packagist, require this package from a local Laravel project:
+To try local changes, require this package from a local Laravel project:
 
 ```bash
 composer config repositories.raraxuan path ../laravel-raraxuan
 composer require latitudeinnovation/laravel-raraxuan:@dev
 ```
 
-If Composer cannot detect the package version, add a branch alias or require `dev-main` from a Git checkout.
+If Composer cannot detect the package version, require `dev-main` from a Git checkout.
 
 ## Queue Support
 
