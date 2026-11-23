@@ -5,7 +5,7 @@ Laravel SDK for calling the Raraxuan AI API from Laravel applications.
 ## Requirements
 
 - PHP 8.2+
-- Laravel 10, 11, 12, or 13
+- Laravel 12 or 13
 
 ## Installation
 
@@ -138,16 +138,24 @@ After installing development dependencies, run:
 composer test
 ```
 
+## Contributing & Releases
+
+- `main` is the only permanent branch. Do not create `staging` or `develop` branches.
+- Create temporary branches for your work, such as `feature/my-change` or `fix/my-bug`.
+- Open pull requests against `main`. CI (`composer validate` and the test matrix) must pass before merging.
+- Stable releases are published by tagging `main` with a Semantic Versioning tag (`v0.2.1` for a fix, `v0.3.0` for new backward-compatible features). Packagist picks up the tags.
+- `dev-main` stays available for anyone who needs the latest unreleased code.
+
 ## Local Development
 
-Before publishing to Packagist, require this package from a local Laravel project:
+To try local changes, require this package from a local Laravel project:
 
 ```bash
 composer config repositories.raraxuan path ../laravel-raraxuan
 composer require latitudeinnovation/laravel-raraxuan:@dev
 ```
 
-If Composer cannot detect the package version, add a branch alias or require `dev-main` from a Git checkout.
+If Composer cannot detect the package version, require `dev-main` from a Git checkout.
 
 ## Queue Support
 
