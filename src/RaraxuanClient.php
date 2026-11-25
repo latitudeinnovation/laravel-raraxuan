@@ -2,8 +2,13 @@
 
 namespace LatitudeInnovation\Raraxuan;
 
+use Closure;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
+use LatitudeInnovation\Raraxuan\Chat\ChatApi;
+use LatitudeInnovation\Raraxuan\Chat\ChatContext;
+use LatitudeInnovation\Raraxuan\Chat\PendingChat;
 use LatitudeInnovation\Raraxuan\Exceptions\InvalidConfigurationException;
 use LatitudeInnovation\Raraxuan\Exceptions\MissingApiKeyException;
 
@@ -46,6 +51,45 @@ class RaraxuanClient
         return $this->processPrompt($agent, $input);
     }
 
+    /**
+     * Start a chat request, e.g. Raraxuan::chat()->message('Hello')->send().
+     */
+    public function chat(): PendingChat
+    {
+        return new PendingChat(app(ChatApi::class), app(ChatContext::class));
+    }
+
+    /**
+     * Customize the end-user id sent to Raraxuan (default: the user's auth identifier).
+     *
+     * @param  Closure(Authenticatable): (string|int)  $resolver
+     */
+    public function resolveChatUserUsing(Closure $resolver): void
+    {
+        app(ChatContext::class)->resolveUserUsing($resolver);
+    }
+
+    /**
+     * Per-user template variables for new conversations, merged over config raraxuan.chat.variables.
+     *
+     * @param  Closure(Authenticatable): array<string, mixed>  $resolver
+     */
+    public function chatVariablesUsing(Closure $resolver): void
+    {
+        app(ChatContext::class)->variablesUsing($resolver);
+    }
+
+    /**
+     * Map an end-user id from Raraxuan back to your user, for MCP tool calls.
+     * Needed when you customize resolveChatUserUsing().
+     *
+     * @param  Closure(string): ?Authenticatable  $resolver
+     */
+    public function resolveMcpUserUsing(Closure $resolver): void
+    {
+        app(ChatContext::class)->resolveMcpUserUsing($resolver);
+    }
+
     protected function endpoint(string $path): string
     {
         return $this->baseUrl() . '/' . ltrim($path, '/');
@@ -64,7 +108,7 @@ class RaraxuanClient
 
     protected function processPath(): string
     {
-        $processPath = config('raraxuan.process_path', '/v1/prompts/process');
+        $processPath = config('raraxuan.process_path', '/api/v1/prompts/process');
 
         if (! is_string($processPath) || trim($processPath) === '') {
             throw InvalidConfigurationException::missingProcessPath();
@@ -75,7 +119,7 @@ class RaraxuanClient
 
     protected function pingPath(): string
     {
-        $pingPath = config('raraxuan.ping_path', '/v1/ping');
+        $pingPath = config('raraxuan.ping_path', '/api/v1/ping');
 
         if (! is_string($pingPath) || trim($pingPath) === '') {
             throw InvalidConfigurationException::missingPingPath();
