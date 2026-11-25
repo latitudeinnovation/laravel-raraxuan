@@ -19,7 +19,7 @@ class RaraxuanClientTest extends TestCase
         ]);
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/prompts/process' => Http::response([
+            'https://ai.raraxuan.test/api/v1/prompts/process' => Http::response([
                 'success' => true,
                 'data' => [
                     'reply' => 'Hello',
@@ -41,7 +41,7 @@ class RaraxuanClientTest extends TestCase
         ], $response);
 
         Http::assertSent(function (Request $request) {
-            return $request->url() === 'https://ai.raraxuan.test/v1/prompts/process'
+            return $request->url() === 'https://ai.raraxuan.test/api/v1/prompts/process'
                 && $request->hasHeader('Authorization', 'Bearer rx_test_key')
                 && $request['template'] === 'customer-support-reply'
                 && $request['variables'] === [
@@ -60,7 +60,7 @@ class RaraxuanClientTest extends TestCase
         ]);
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/ping' => Http::response([
+            'https://ai.raraxuan.test/api/v1/ping' => Http::response([
                 'success' => true,
                 'data' => [
                     'status' => 'ok',
@@ -77,7 +77,7 @@ class RaraxuanClientTest extends TestCase
             ],
         ], $response);
 
-        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://ai.raraxuan.test/v1/ping'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://ai.raraxuan.test/api/v1/ping'
             && $request->method() === 'GET'
             && $request->hasHeader('Authorization', 'Bearer rx_test_key'));
     }
@@ -90,7 +90,7 @@ class RaraxuanClientTest extends TestCase
         ]);
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/prompts/process' => Http::response([
+            'https://ai.raraxuan.test/api/v1/prompts/process' => Http::response([
                 'success' => false,
                 'error' => [
                     'code' => 'invalid_template',
@@ -141,7 +141,7 @@ class RaraxuanClientTest extends TestCase
         ]);
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/prompts/process' => Http::response(['success' => true], 200),
+            'https://ai.raraxuan.test/api/v1/prompts/process' => Http::response(['success' => true], 200),
         ]);
 
         $response = $this->app->make(RaraxuanClient::class)->agent('seo-writer', [
@@ -151,7 +151,7 @@ class RaraxuanClientTest extends TestCase
         $this->assertSame(['success' => true], $response);
 
         Http::assertSent(function (Request $request): bool {
-            return $request->url() === 'https://ai.raraxuan.test/v1/prompts/process'
+            return $request->url() === 'https://ai.raraxuan.test/api/v1/prompts/process'
                 && $request['template'] === 'seo-writer'
                 && $request['variables'] === ['topic' => 'Laravel hosting'];
         });

@@ -22,7 +22,7 @@ class RaraxuanCommandTest extends TestCase
         ];
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/prompts/process' => Http::response($response, 200),
+            'https://ai.raraxuan.test/api/v1/prompts/process' => Http::response($response, 200),
         ]);
 
         $this->artisan('raraxuan:run', [
@@ -33,7 +33,7 @@ class RaraxuanCommandTest extends TestCase
             ->assertExitCode(0);
 
         Http::assertSent(function (Request $request): bool {
-            return $request->url() === 'https://ai.raraxuan.test/v1/prompts/process'
+            return $request->url() === 'https://ai.raraxuan.test/api/v1/prompts/process'
                 && $request->hasHeader('Authorization', 'Bearer rx_test_key')
                 && $request['template'] === 'customer-support-reply'
                 && $request['variables'] === ['customer_message' => 'Hello'];
@@ -48,7 +48,7 @@ class RaraxuanCommandTest extends TestCase
         ]);
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/prompts/process' => Http::response(['success' => true], 200),
+            'https://ai.raraxuan.test/api/v1/prompts/process' => Http::response(['success' => true], 200),
         ]);
 
         $this->artisan('raraxuan:run', [
@@ -108,7 +108,7 @@ class RaraxuanCommandTest extends TestCase
         ];
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/prompts/process' => Http::response($response, 422),
+            'https://ai.raraxuan.test/api/v1/prompts/process' => Http::response($response, 422),
         ]);
 
         $this->artisan('raraxuan:run', [
@@ -134,14 +134,14 @@ class RaraxuanCommandTest extends TestCase
         ];
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/ping' => Http::response($response, 200),
+            'https://ai.raraxuan.test/api/v1/ping' => Http::response($response, 200),
         ]);
 
         $this->artisan('raraxuan:ping')
             ->expectsOutput($this->prettyJson($response))
             ->assertExitCode(0);
 
-        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://ai.raraxuan.test/v1/ping'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://ai.raraxuan.test/api/v1/ping'
             && $request->method() === 'GET'
             && $request->hasHeader('Authorization', 'Bearer rx_test_key'));
     }
@@ -162,7 +162,7 @@ class RaraxuanCommandTest extends TestCase
         ];
 
         Http::fake([
-            'https://ai.raraxuan.test/v1/ping' => Http::response($response, 503),
+            'https://ai.raraxuan.test/api/v1/ping' => Http::response($response, 503),
         ]);
 
         $this->artisan('raraxuan:ping')
